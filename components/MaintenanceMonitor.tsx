@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { MaintenanceTask, SolarResult } from '../types.ts';
+import { MaintenanceTask, SolarResult } from '../types';
 
 interface MaintenanceMonitorProps {
   results: SolarResult;
@@ -11,7 +11,6 @@ const MaintenanceMonitor: React.FC<MaintenanceMonitorProps> = ({ results }) => {
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // Generate tasks based on system size
     const initialTasks: MaintenanceTask[] = [
       {
         id: '1',
@@ -64,7 +63,6 @@ const MaintenanceMonitor: React.FC<MaintenanceMonitorProps> = ({ results }) => {
 
   const healthScore = 70 + (completedIds.size / tasks.length) * 30;
 
-  // Find the earliest upcoming reminder date
   const nextServiceDate = tasks
     .filter(t => t.reminderDate)
     .map(t => t.reminderDate!)
@@ -143,7 +141,6 @@ const MaintenanceMonitor: React.FC<MaintenanceMonitorProps> = ({ results }) => {
                       </span>
                     </div>
                     
-                    {/* Reminder Date Picker */}
                     <div className="flex flex-col items-end">
                        <label className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Reminder Date</label>
                        <input 

@@ -33,27 +33,22 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
     transportAndLogisticsCost = 0
   } = input;
   
-  // 1. Calculate Energy Requirements
   const monthlyKwh = monthlyBill / (electricityRate || 1);
   const dailyKwh = monthlyKwh / 30;
   const designSafetyFactor = 1.2;
   const dailyEnergyTarget = dailyKwh * designSafetyFactor;
 
-  // 2. System Sizing
   const efficiencyLossFactor = 0.8;
   const sunHrs = sunlightHours || 4.5;
   const requiredSystemSizeKw = dailyEnergyTarget / (sunHrs * efficiencyLossFactor);
 
-  // 3. Component Quantities
   const panelCount = Math.ceil((requiredSystemSizeKw * 1000) / panelWattage);
   const actualSystemSizeKw = (panelCount * panelWattage) / 1000;
   const batteryCount = Math.ceil(dailyEnergyTarget / batteryCapacity);
   const inverterCount = Math.ceil(actualSystemSizeKw / inverterCapacity);
 
-  // 4. Production
   const annualProduction = actualSystemSizeKw * sunHrs * 365 * efficiencyLossFactor;
 
-  // 5. Bill of Materials (BOM)
   const components: Component[] = [
     {
       name: 'Solar Panels',
@@ -115,7 +110,6 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
 
   const estimatedTotalCost = components.reduce((sum, c) => sum + c.estimatedCost, 0);
 
-  // 6. Financials
   const monthlySavings = monthlyKwh * electricityRate;
   const paybackYears = monthlySavings > 0 ? estimatedTotalCost / (monthlySavings * 12) : 0;
   const carbonOffsetTons = (annualProduction * 0.4) / 1000;

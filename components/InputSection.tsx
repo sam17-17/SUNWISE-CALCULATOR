@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState } from 'react';
-import { UserInput } from '../types.ts';
+import { UserInput } from '../types';
 
 interface InputSectionProps {
   input: UserInput;
@@ -89,7 +89,7 @@ const InputSection: React.FC<InputSectionProps> = ({ input, setInput, onCalculat
         </div>
       </div>
 
-      {/* 2. ENERGY PROFILE - REDESIGNED & EDITABLE */}
+      {/* 2. ENERGY PROFILE */}
       <div className="bg-slate-900/40 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
         <div className="px-5 py-3 border-b border-white/5 bg-white/[0.01] flex justify-between items-center">
           <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">

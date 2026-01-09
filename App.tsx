@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { UserInput, SolarResult, AIAdvice } from './types.ts';
-import { calculateSolarPotential, getEstimatedSunlight } from './utils/calculations.ts';
-import { getSolarAdvice } from './services/geminiService.ts';
-import InputSection from './components/InputSection.tsx';
-import ResultsSection from './components/ResultsSection.tsx';
-import AIAdviceSection from './components/AIAdviceSection.tsx';
-import MaintenanceMonitor from './components/MaintenanceMonitor.tsx';
+import { UserInput, SolarResult, AIAdvice } from './types';
+import { calculateSolarPotential, getEstimatedSunlight } from './utils/calculations';
+import { getSolarAdvice } from './services/geminiService';
+import InputSection from './components/InputSection';
+import ResultsSection from './components/ResultsSection';
+import AIAdviceSection from './components/AIAdviceSection';
+import MaintenanceMonitor from './components/MaintenanceMonitor';
 
 const App: React.FC = () => {
   const [input, setInput] = useState<UserInput>({
@@ -151,7 +151,6 @@ const App: React.FC = () => {
 
       <main className="max-w-[1400px] mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
           <aside className="lg:col-span-4 xl:col-span-3 space-y-6 no-print">
             <div className="sticky top-24">
               <InputSection 
@@ -229,7 +228,6 @@ const App: React.FC = () => {
                     </div>
                   )}
                   
-                  {/* Floating Action for Mobile */}
                   <div className="lg:hidden fixed bottom-6 right-6 z-50 no-print">
                     <button 
                       onClick={() => window.print()}
