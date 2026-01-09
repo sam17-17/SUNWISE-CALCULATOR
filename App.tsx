@@ -14,8 +14,8 @@ const INITIAL_ADMIN: User = {
   id: 'admin', 
   name: 'Super Admin', 
   role: 'Admin', 
-  email: 'admin@geosam.com',
-  password: 'admin123'
+  username: 'admin',
+  pin: '1234'
 };
 
 const App: React.FC = () => {
@@ -54,7 +54,6 @@ const App: React.FC = () => {
   const [adviceLoading, setAdviceLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Persistence Logic
   useEffect(() => {
     const savedUsers = localStorage.getItem('sunwise_users');
     if (savedUsers) {
@@ -103,7 +102,7 @@ const App: React.FC = () => {
   };
 
   const handleDeleteUser = (userId: string) => {
-    if (userId === 'admin') return; // Cannot delete super admin
+    if (userId === 'admin') return; 
     const updatedUsers = users.filter(u => u.id !== userId);
     setUsers(updatedUsers);
     localStorage.setItem('sunwise_users', JSON.stringify(updatedUsers));
@@ -194,10 +193,10 @@ const App: React.FC = () => {
                 <h1 className="text-xl font-black tracking-tighter text-white uppercase flex items-center gap-2">
                   SunWise Pro
                   <span className="text-cyan-500 text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20 lowercase tracking-normal font-mono">
-                    Enterprise
+                    Geosam Portal
                   </span>
                 </h1>
-                <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest leading-none">Geosam Investments Portal</p>
+                <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest leading-none">Internal Operations</p>
               </div>
             </div>
 
@@ -279,7 +278,7 @@ const App: React.FC = () => {
                   </div>
                   <h2 className="text-3xl font-black text-white mb-3 uppercase tracking-tighter text-center">Ready for Configuration</h2>
                   <p className="text-slate-500 max-w-md text-center text-sm leading-relaxed px-8">
-                    Welcome back, <span className="text-cyan-400 font-black">{currentUser.name}</span>. Configure the parameters below or use a hardware preset to generate a new project proposal.
+                    Welcome <span className="text-cyan-400 font-black">{currentUser.name}</span>. Use the calculator to architect high-efficiency solar solutions for Geosam clients.
                   </p>
                 </div>
               ) : loading ? (
@@ -342,7 +341,7 @@ const App: React.FC = () => {
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest opacity-60 italic">Engineering Sustainable Futures Since 2012</p>
           </div>
           <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">
-            <span className="bg-slate-900 px-3 py-1 rounded-full text-cyan-500 border border-white/5">Authenticated Instance</span>
+            <span className="bg-slate-900 px-3 py-1 rounded-full text-cyan-500 border border-white/5">Session Active: {currentUser.username}</span>
             <span className="hover:text-cyan-500 cursor-pointer transition-colors px-2 py-1">Help Desk</span>
           </div>
         </div>

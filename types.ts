@@ -5,42 +5,32 @@ export interface User {
   id: string;
   name: string;
   role: UserRole;
-  email: string;
-  password?: string; // Only used for internal auth simulation
+  username: string; // Changed from email
+  pin?: string;     // Changed from password (numerical/text pin)
   avatar?: string;
 }
 
 export interface UserInput {
-  // Client Info
   clientName: string;
   clientContact: string;
   clientAddress: string;
-
   monthlyBill: number;
-  electricityRate: number; // KES per kWh
-  roofArea: number; // sq meters
+  electricityRate: number;
+  roofArea: number;
   location: string;
   sunlightHours: number;
   panelEfficiency: number;
-  
-  // Component Sizes
-  panelWattage: number; // Watts per panel
-  batteryCapacity: number; // kWh per battery
-  batterySizeDescription?: string; // e.g. "100Ah x 50V"
-  inverterCapacity: number; // kW per inverter
-  
-  // Pricing & Expenses
+  panelWattage: number;
+  batteryCapacity: number;
+  batterySizeDescription?: string;
+  inverterCapacity: number;
   panelPricePerUnit: number;
   batteryPricePerUnit: number;
   inverterPrice: number;
-  
-  // Labor & Logistics Module
   installationLaborCost: number;
   mountingHardwareCostPerPanel: number;
   cablingAndProtectionCost: number;
   transportAndLogisticsCost: number;
-
-  // Business Margins (Admin/Accountant only)
   markupPercentage: number;
 }
 
