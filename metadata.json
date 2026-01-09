@@ -1,0 +1,7 @@
+{
+  "name": "Sunwise Solar Calculator",
+  "description": "A comprehensive solar power system calculator that estimates energy production, savings, and provides AI-powered recommendations based on local sunlight and energy needs.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
