@@ -8,18 +8,20 @@ import ResultsSection from './components/ResultsSection';
 import AIAdviceSection from './components/AIAdviceSection';
 import MaintenanceMonitor from './components/MaintenanceMonitor';
 import UserManagement from './components/UserManagement';
+import Login from './components/Login';
 
-const APP_USERS: User[] = [
-  { id: '1', name: 'Sam Geosam', role: 'CEO', email: 'ceo@geosam.com' },
-  { id: '2', name: 'Jane W.', role: 'COO', email: 'operations@geosam.com' },
-  { id: '3', name: 'Peter M.', role: 'Accountant', email: 'finance@geosam.com' },
-  { id: '4', name: 'Eng. Kelvin', role: 'Engineer', email: 'tech@geosam.com' },
-  { id: '5', name: 'Sarah L.', role: 'Marketing', email: 'branding@geosam.com' },
-  { id: '6', name: 'Mike T.', role: 'Sales', email: 'deals@geosam.com' },
-];
+const INITIAL_ADMIN: User = { 
+  id: 'admin', 
+  name: 'Super Admin', 
+  role: 'Admin', 
+  email: 'admin@geosam.com',
+  password: 'admin123'
+};
 
 const App: React.FC = () => {
-  const [currentUser, setCurrentUser] = useState<User>(APP_USERS[0]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
   const [activeTab, setActiveTab] = useState<'calculator' | 'management'>('calculator');
   
   const [input, setInput] = useState<UserInput>({
@@ -52,6 +54,24 @@ const App: React.FC = () => {
   const [adviceLoading, setAdviceLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Persistence Logic
+  useEffect(() => {
+    const savedUsers = localStorage.getItem('sunwise_users');
+    if (savedUsers) {
+      setUsers(JSON.parse(savedUsers));
+    } else {
+      setUsers([INITIAL_ADMIN]);
+      localStorage.setItem('sunwise_users', JSON.stringify([INITIAL_ADMIN]));
+    }
+
+    const savedAuth = localStorage.getItem('sunwise_auth');
+    if (savedAuth) {
+      const user = JSON.parse(savedAuth);
+      setCurrentUser(user);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -62,6 +82,32 @@ const App: React.FC = () => {
       });
     }
   }, []);
+
+  const handleLogin = (user: User) => {
+    setCurrentUser(user);
+    setIsLoggedIn(true);
+    localStorage.setItem('sunwise_auth', JSON.stringify(user));
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    setIsLoggedIn(false);
+    localStorage.removeItem('sunwise_auth');
+    setActiveTab('calculator');
+  };
+
+  const handleAddUser = (newUser: User) => {
+    const updatedUsers = [...users, newUser];
+    setUsers(updatedUsers);
+    localStorage.setItem('sunwise_users', JSON.stringify(updatedUsers));
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    if (userId === 'admin') return; // Cannot delete super admin
+    const updatedUsers = users.filter(u => u.id !== userId);
+    setUsers(updatedUsers);
+    localStorage.setItem('sunwise_users', JSON.stringify(updatedUsers));
+  };
 
   const handleCalculate = async () => {
     if (input.monthlyBill <= 0 || input.electricityRate <= 0) {
@@ -121,6 +167,10 @@ const App: React.FC = () => {
     setInput(prev => ({ ...prev, ...presets[type] }));
   };
 
+  if (!isLoggedIn || !currentUser) {
+    return <Login onLogin={handleLogin} users={users} />;
+  }
+
   const isManagementAllowed = ['CEO', 'COO', 'Accountant', 'Admin'].includes(currentUser.role);
 
   return (
@@ -144,7 +194,7 @@ const App: React.FC = () => {
                 <h1 className="text-xl font-black tracking-tighter text-white uppercase flex items-center gap-2">
                   SunWise Pro
                   <span className="text-cyan-500 text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20 lowercase tracking-normal font-mono">
-                    Business Edition
+                    Enterprise
                   </span>
                 </h1>
                 <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest leading-none">Geosam Investments Portal</p>
@@ -170,21 +220,18 @@ const App: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-6">
-            {/* User Profile / Role Switcher */}
             <div className="flex items-center gap-3 pr-6 border-r border-white/10">
-              <div className="text-right hidden sm:block">
+              <div className="text-right">
                 <p className="text-[10px] font-black text-white leading-none uppercase tracking-tighter">{currentUser.name}</p>
                 <p className="text-[8px] font-black text-cyan-500 uppercase tracking-widest mt-1">{currentUser.role}</p>
               </div>
-              <select 
-                value={currentUser.id}
-                onChange={(e) => setCurrentUser(APP_USERS.find(u => u.id === e.target.value)!)}
-                className="bg-slate-900 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-black text-slate-400 uppercase outline-none focus:border-cyan-500"
+              <button 
+                onClick={handleLogout}
+                className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-95"
+                title="Logout"
               >
-                {APP_USERS.map(u => (
-                  <option key={u.id} value={u.id}>{u.role}</option>
-                ))}
-              </select>
+                <i className="fas fa-right-from-bracket"></i>
+              </button>
             </div>
             
             <button 
@@ -201,10 +248,12 @@ const App: React.FC = () => {
         {activeTab === 'management' ? (
           <UserManagement 
             currentUser={currentUser} 
-            users={APP_USERS} 
+            users={users} 
             systemResults={results}
             input={input}
             setInput={setInput}
+            onAddUser={handleAddUser}
+            onDeleteUser={handleDeleteUser}
           />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -230,7 +279,7 @@ const App: React.FC = () => {
                   </div>
                   <h2 className="text-3xl font-black text-white mb-3 uppercase tracking-tighter text-center">Ready for Configuration</h2>
                   <p className="text-slate-500 max-w-md text-center text-sm leading-relaxed px-8">
-                    Role identified as <span className="text-cyan-400 font-black">{currentUser.role}</span>. Configure the technical and financial parameters to generate a proposal.
+                    Welcome back, <span className="text-cyan-400 font-black">{currentUser.name}</span>. Configure the parameters below or use a hardware preset to generate a new project proposal.
                   </p>
                 </div>
               ) : loading ? (
@@ -243,7 +292,7 @@ const App: React.FC = () => {
                   </div>
                   <div className="text-center space-y-2">
                     <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Crunching the Numbers</h3>
-                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Architecting your high-efficiency system</p>
+                    <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Architecting high-efficiency solar infrastructure</p>
                   </div>
                 </div>
               ) : (
@@ -260,7 +309,7 @@ const App: React.FC = () => {
                         {adviceLoading ? (
                           <div className="p-16 bg-slate-900/40 rounded-[2rem] border border-white/10 flex flex-col items-center justify-center gap-6 animate-pulse">
                             <div className="w-10 h-10 border-2 border-white/10 border-t-cyan-500 rounded-full animate-spin"></div>
-                            <p className="text-slate-500 text-[10px] uppercase font-black tracking-[0.2em]">Auditing Local Context</p>
+                            <p className="text-slate-500 text-[10px] uppercase font-black tracking-[0.2em]">Auditing AI Context</p>
                           </div>
                         ) : (
                           advice && <AIAdviceSection advice={advice} />
@@ -293,8 +342,8 @@ const App: React.FC = () => {
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest opacity-60 italic">Engineering Sustainable Futures Since 2012</p>
           </div>
           <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">
-            <span className="bg-slate-900 px-3 py-1 rounded-full text-cyan-500 border border-white/5">Internal Use Only</span>
-            <span className="hover:text-cyan-500 cursor-pointer transition-colors px-2 py-1">Support</span>
+            <span className="bg-slate-900 px-3 py-1 rounded-full text-cyan-500 border border-white/5">Authenticated Instance</span>
+            <span className="hover:text-cyan-500 cursor-pointer transition-colors px-2 py-1">Help Desk</span>
           </div>
         </div>
       </footer>

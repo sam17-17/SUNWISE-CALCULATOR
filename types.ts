@@ -6,6 +6,7 @@ export interface User {
   name: string;
   role: UserRole;
   email: string;
+  password?: string; // Only used for internal auth simulation
   avatar?: string;
 }
 
