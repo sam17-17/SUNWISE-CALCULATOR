@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState } from 'react';
-import { UserInput } from '../types';
+import { UserInput, User } from '../types';
 
 interface InputSectionProps {
   input: UserInput;
@@ -8,10 +8,15 @@ interface InputSectionProps {
   onCalculate: () => void;
   onApplyPreset: (type: 'starter' | 'standard' | 'pro') => void;
   isLoading: boolean;
+  currentUser: User;
 }
 
-const InputSection: React.FC<InputSectionProps> = ({ input, setInput, onCalculate, onApplyPreset, isLoading }) => {
+const InputSection: React.FC<InputSectionProps> = ({ input, setInput, onCalculate, onApplyPreset, isLoading, currentUser }) => {
   const [showLoadEstimator, setShowLoadEstimator] = useState(false);
+
+  const isAdmin = ['CEO', 'COO', 'Admin', 'Accountant'].includes(currentUser.role);
+  const isEngineer = currentUser.role === 'Engineer' || isAdmin;
+  const isAccountant = currentUser.role === 'Accountant' || isAdmin;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -61,6 +66,7 @@ const InputSection: React.FC<InputSectionProps> = ({ input, setInput, onCalculat
       mountingTotal;
 
     const runningSubtotal = panelTotal + batteryTotal + inverterTotal + laborAndMiscTotal;
+    const estimatedRetail = runningSubtotal * (1 + (input.markupPercentage / 100));
 
     return {
       dailyTarget: dailyTarget.toFixed(2),
@@ -68,7 +74,8 @@ const InputSection: React.FC<InputSectionProps> = ({ input, setInput, onCalculat
       panelQty: finalPanelQty,
       batteryQty: finalBatteryQty,
       inverterQty: finalInverterQty,
-      runningSubtotal
+      runningSubtotal,
+      estimatedRetail
     };
   }, [input]);
 
@@ -153,8 +160,8 @@ const InputSection: React.FC<InputSectionProps> = ({ input, setInput, onCalculat
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <InputField label="Rate (KES/kWh)" name="electricityRate" value={input.electricityRate} onChange={handleChange} step="0.1" />
-            <InputField label="Peak Sun Hrs" name="sunlightHours" value={input.sunlightHours} onChange={handleChange} step="0.1" />
+            <InputField label="Rate (KES/kWh)" name="electricityRate" value={input.electricityRate} onChange={handleChange} step="0.1" disabled={!isAccountant} />
+            <InputField label="Peak Sun Hrs" name="sunlightHours" value={input.sunlightHours} onChange={handleChange} step="0.1" disabled={!isEngineer} />
           </div>
         </div>
       </div>
@@ -188,9 +195,14 @@ const InputSection: React.FC<InputSectionProps> = ({ input, setInput, onCalculat
           />
         </div>
         <div className="p-5 pt-0 grid grid-cols-2 gap-4">
-          <InputField label="Inv. Size (kW)" name="inverterCapacity" value={input.inverterCapacity} onChange={handleChange} />
-          <InputField label="Bat. Size (kWh)" name="batteryCapacity" value={input.batteryCapacity} onChange={handleChange} step="0.1" />
+          <InputField label="Inv. Size (kW)" name="inverterCapacity" value={input.inverterCapacity} onChange={handleChange} disabled={!isEngineer} />
+          <InputField label="Bat. Size (kWh)" name="batteryCapacity" value={input.batteryCapacity} onChange={handleChange} step="0.1" disabled={!isEngineer} />
         </div>
+        {isAccountant && (
+          <div className="p-5 pt-0">
+             <InputField label="Markup %" name="markupPercentage" value={input.markupPercentage} onChange={handleChange} />
+          </div>
+        )}
       </div>
 
       {/* CALCULATE ACTION */}
@@ -199,12 +211,12 @@ const InputSection: React.FC<InputSectionProps> = ({ input, setInput, onCalculat
         <div className="relative z-10">
           <div className="flex justify-between items-end mb-5">
             <div>
-              <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">Estimate Value</p>
-              <p className="text-2xl font-black text-white leading-none">KES {liveStats.runningSubtotal.toLocaleString()}</p>
+              <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">Retail Quote</p>
+              <p className="text-2xl font-black text-white leading-none">KES {liveStats.estimatedRetail.toLocaleString()}</p>
             </div>
             <div className="text-right">
-              <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">System Match</p>
-              <p className="text-base font-bold text-white leading-none">{(liveStats.panelQty > 0 ? "Optimal" : "Waiting")}</p>
+              <p className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">Cost Basis</p>
+              <p className="text-base font-bold text-white/60 leading-none">KES {liveStats.runningSubtotal.toLocaleString()}</p>
             </div>
           </div>
           <button
@@ -239,10 +251,11 @@ const PresetButton = ({ label, icon, onClick, active }: any) => (
   </button>
 );
 
-const InputField = ({ label, name, value, onChange, placeholder, isString, subLabel, step = "1" }: any) => (
-  <div className="space-y-1.5 flex-1 min-w-0">
+const InputField = ({ label, name, value, onChange, placeholder, isString, subLabel, step = "1", disabled }: any) => (
+  <div className={`space-y-1.5 flex-1 min-w-0 ${disabled ? 'opacity-50 grayscale pointer-events-none' : ''}`}>
     <div className="flex justify-between items-center gap-2">
       <label className="text-[9px] uppercase font-black text-slate-500 tracking-wider truncate">{label}</label>
+      {disabled && <i className="fas fa-lock text-[8px] text-slate-700"></i>}
       {subLabel && <span className="text-[8px] font-black text-cyan-500/80 uppercase">{subLabel}</span>}
     </div>
     <input
@@ -252,6 +265,7 @@ const InputField = ({ label, name, value, onChange, placeholder, isString, subLa
       value={value || ''}
       onChange={onChange}
       placeholder={placeholder}
+      disabled={disabled}
       className="w-full bg-slate-950 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white focus:border-cyan-500/50 outline-none transition-all placeholder:text-slate-700 shadow-inner"
     />
   </div>

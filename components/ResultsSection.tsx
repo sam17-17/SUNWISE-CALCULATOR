@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState, useRef } from 'react';
-import { SolarResult } from '../types';
+import { SolarResult, User } from '../types';
 import { 
   AreaChart, 
   Area, 
@@ -19,11 +19,14 @@ interface ResultsSectionProps {
     contact: string;
     address: string;
   };
+  currentUser: User;
 }
 
-const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo }) => {
+const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo, currentUser }) => {
   const [componentImages, setComponentImages] = useState<Record<number, string>>({});
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+
+  const isAdmin = ['CEO', 'COO', 'Admin', 'Accountant'].includes(currentUser.role);
 
   const projectionData = useMemo(() => {
     const data = [];
@@ -37,7 +40,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo }) 
       data.push({
         year: `Year ${year}`,
         savings: Math.round(cumulativeSavings),
-        investment: results.estimatedTotalCost
+        investment: results.estimatedRetailPrice
       });
     }
     return data;
@@ -140,21 +143,23 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo }) 
           tooltip="Total peak power output of all solar panels combined."
         />
         <SummaryCard 
-          label="Total Investment" 
-          value={`KES ${results.estimatedTotalCost.toLocaleString()}`} 
+          label="Customer Price" 
+          value={`KES ${results.estimatedRetailPrice.toLocaleString()}`} 
           unit="" 
           icon="fa-wallet" 
           color="text-white" 
-          tooltip="Estimated total cost including hardware, labor, and logistics."
+          tooltip="Retail price offered to the customer including your business markup."
         />
-        <SummaryCard 
-          label="Est. Yield" 
-          value={`${results.annualProductionKwh.toLocaleString()}`} 
-          unit="kWh/yr" 
-          icon="fa-plug-circle-bolt" 
-          color="text-yellow-400" 
-          tooltip="Estimated energy production over the first 12 months."
-        />
+        {isAdmin && (
+          <SummaryCard 
+            label="Projected Profit" 
+            value={`KES ${results.projectedProfit.toLocaleString()}`} 
+            unit="" 
+            icon="fa-money-bill-trend-up" 
+            color="text-emerald-400" 
+            tooltip="Calculated profit after all cost basis and logistics are paid."
+          />
+        )}
         <SummaryCard 
           label="Payback Period" 
           value={`${results.paybackYears}`} 
@@ -191,7 +196,7 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo }) 
               <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{fill: '#475569', fontSize: 10, fontWeight: 900}} dy={15} />
               <YAxis axisLine={false} tickLine={false} tick={{fill: '#475569', fontSize: 10, fontWeight: 900}} tickFormatter={(val) => `K ${val/1000}k`} />
               <RechartsTooltip content={<CustomTooltip />} />
-              <ReferenceLine y={results.estimatedTotalCost} stroke="#ef4444" strokeDasharray="5 5" strokeOpacity={0.4} label={{ position: 'right', value: 'Cost', fill: '#ef4444', fontSize: 9, fontWeight: 900 }} />
+              <ReferenceLine y={results.estimatedRetailPrice} stroke="#ef4444" strokeDasharray="5 5" strokeOpacity={0.4} label={{ position: 'right', value: 'Cost', fill: '#ef4444', fontSize: 9, fontWeight: 900 }} />
               <Area type="monotone" dataKey="savings" stroke="#06b6d4" strokeWidth={5} fillOpacity={1} fill="url(#colorSavings)" animationDuration={2500} />
             </AreaChart>
           </ResponsiveContainer>
@@ -206,8 +211,8 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo }) 
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Sourcing and labor breakdown</p>
           </div>
           <div className="text-right">
-            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Estimated Total Valuation</p>
-            <span className="text-3xl font-black text-white tracking-tighter">KES {results.estimatedTotalCost.toLocaleString()}</span>
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Retail Price Valuation</p>
+            <span className="text-3xl font-black text-white tracking-tighter">KES {results.estimatedRetailPrice.toLocaleString()}</span>
           </div>
         </div>
         <div className="overflow-x-auto">
@@ -225,7 +230,6 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo }) 
                 <tr key={idx} className="group hover:bg-white/[0.01] transition-colors">
                   <td className="px-10 py-8">
                     <div className="flex items-center gap-6">
-                      {/* Image Upload/Display Area */}
                       <div 
                         onClick={() => triggerUpload(idx)}
                         className="relative w-20 h-20 flex-shrink-0 bg-slate-950 rounded-2xl border border-white/5 overflow-hidden group/img cursor-pointer transition-all hover:border-cyan-500/50"
@@ -248,9 +252,6 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo }) 
                             <span className="text-[7px] font-black uppercase no-print">Upload</span>
                           </div>
                         )}
-                        <div className="absolute inset-0 bg-cyan-500/20 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center no-print">
-                          <i className="fas fa-camera text-white text-xs"></i>
-                        </div>
                         <input 
                           type="file" 
                           ref={el => { fileInputRefs.current[idx] = el; }}

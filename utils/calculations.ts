@@ -1,13 +1,8 @@
 
 import { UserInput, SolarResult, Component } from '../types';
 
-/**
- * Estimates peak sunlight hours based on latitude for solar potential calculations.
- * Regions near the equator (like Kenya) typically average higher peak sun hours.
- */
 export const getEstimatedSunlight = (latitude: number): number => {
   const absLat = Math.abs(latitude);
-  // Kenya latitude range is approx -4 to +4
   if (absLat < 5) return 5.8;
   if (absLat < 15) return 5.4;
   if (absLat < 25) return 5.0;
@@ -30,7 +25,8 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
     installationLaborCost = 0,
     mountingHardwareCostPerPanel = 0,
     cablingAndProtectionCost = 0,
-    transportAndLogisticsCost = 0
+    transportAndLogisticsCost = 0,
+    markupPercentage = 15
   } = input;
   
   const monthlyKwh = monthlyBill / (electricityRate || 1);
@@ -109,9 +105,11 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
   ];
 
   const estimatedTotalCost = components.reduce((sum, c) => sum + c.estimatedCost, 0);
+  const retailPrice = estimatedTotalCost * (1 + (markupPercentage / 100));
+  const profit = retailPrice - estimatedTotalCost;
 
   const monthlySavings = monthlyKwh * electricityRate;
-  const paybackYears = monthlySavings > 0 ? estimatedTotalCost / (monthlySavings * 12) : 0;
+  const paybackYears = monthlySavings > 0 ? retailPrice / (monthlySavings * 12) : 0;
   const carbonOffsetTons = (annualProduction * 0.4) / 1000;
 
   return {
@@ -119,6 +117,8 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
     systemSizeKw: Number(actualSystemSizeKw.toFixed(2)),
     annualProductionKwh: Math.round(annualProduction),
     estimatedTotalCost: Math.round(estimatedTotalCost),
+    estimatedRetailPrice: Math.round(retailPrice),
+    projectedProfit: Math.round(profit),
     monthlySavings: Math.round(monthlySavings),
     paybackYears: Number(paybackYears.toFixed(1)),
     carbonOffsetTons: Number(carbonOffsetTons.toFixed(2)),

@@ -1,4 +1,14 @@
 
+export type UserRole = 'CEO' | 'COO' | 'Accountant' | 'Engineer' | 'Marketing' | 'Sales' | 'Admin';
+
+export interface User {
+  id: string;
+  name: string;
+  role: UserRole;
+  email: string;
+  avatar?: string;
+}
+
 export interface UserInput {
   // Client Info
   clientName: string;
@@ -19,15 +29,18 @@ export interface UserInput {
   inverterCapacity: number; // kW per inverter
   
   // Pricing & Expenses
-  panelPricePerUnit?: number;
-  batteryPricePerUnit?: number;
-  inverterPrice?: number;
+  panelPricePerUnit: number;
+  batteryPricePerUnit: number;
+  inverterPrice: number;
   
   // Labor & Logistics Module
-  installationLaborCost?: number;
-  mountingHardwareCostPerPanel?: number;
-  cablingAndProtectionCost?: number;
-  transportAndLogisticsCost?: number;
+  installationLaborCost: number;
+  mountingHardwareCostPerPanel: number;
+  cablingAndProtectionCost: number;
+  transportAndLogisticsCost: number;
+
+  // Business Margins (Admin/Accountant only)
+  markupPercentage: number;
 }
 
 export interface Component {
@@ -45,6 +58,8 @@ export interface SolarResult {
   systemSizeKw: number;
   annualProductionKwh: number;
   estimatedTotalCost: number;
+  estimatedRetailPrice: number;
+  projectedProfit: number;
   monthlySavings: number;
   paybackYears: number;
   carbonOffsetTons: number;
