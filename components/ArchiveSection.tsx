@@ -14,10 +14,10 @@ const ArchiveSection: React.FC<ArchiveSectionProps> = ({ proposals, onLoad, onDe
   const filteredProposals = useMemo(() => {
     const term = searchTerm.toLowerCase();
     return proposals.filter(p => 
-      p.input.clientName.toLowerCase().includes(term) ||
-      p.input.clientAddress.toLowerCase().includes(term) ||
-      p.id.toLowerCase().includes(term) ||
-      p.input.location.toLowerCase().includes(term)
+      (p.input.clientName || '').toLowerCase().includes(term) ||
+      (p.input.clientAddress || '').toLowerCase().includes(term) ||
+      (p.id || '').toLowerCase().includes(term) ||
+      (p.input.location || '').toLowerCase().includes(term)
     );
   }, [proposals, searchTerm]);
 
@@ -68,7 +68,7 @@ const ArchiveSection: React.FC<ArchiveSectionProps> = ({ proposals, onLoad, onDe
                 <div className="flex justify-between items-start">
                   <div className="space-y-1">
                     <p className="text-[8px] font-black text-cyan-500 uppercase tracking-widest">{p.id}</p>
-                    <h3 className="text-xl font-black text-white uppercase tracking-tighter truncate max-w-[200px]">{p.input.clientName}</h3>
+                    <h3 className="text-xl font-black text-white uppercase tracking-tighter truncate max-w-[200px]">{p.input.clientName || 'Unnamed Client'}</h3>
                   </div>
                   <button 
                     onClick={() => onDelete(p.id)}
@@ -81,25 +81,25 @@ const ArchiveSection: React.FC<ArchiveSectionProps> = ({ proposals, onLoad, onDe
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">System Size</p>
-                    <p className="text-sm font-bold text-slate-300">{p.results.systemSizeKw} kWp</p>
+                    <p className="text-sm font-bold text-slate-300">{p.results?.systemSizeKw || 0} kWp</p>
                   </div>
                   <div className="space-y-1 text-right">
                     <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Project Value</p>
-                    <p className="text-sm font-bold text-cyan-400">KES {p.results.estimatedRetailPrice.toLocaleString()}</p>
+                    <p className="text-sm font-bold text-cyan-400">KES {(p.results?.estimatedRetailPrice || 0).toLocaleString()}</p>
                   </div>
                 </div>
 
                 <div className="space-y-1">
                   <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest">Site Address</p>
-                  <p className="text-[10px] font-bold text-slate-500 truncate">{p.input.clientAddress}</p>
+                  <p className="text-[10px] font-bold text-slate-500 truncate">{p.input?.clientAddress || 'No address provided'}</p>
                 </div>
 
                 <div className="pt-6 border-t border-white/5 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-5 h-5 rounded-md bg-slate-800 flex items-center justify-center text-[8px] font-black text-slate-500">
-                      {p.createdBy[0].toUpperCase()}
+                      {(p.createdBy?.[0] || 'U').toUpperCase()}
                     </div>
-                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">By {p.createdBy}</span>
+                    <span className="text-[8px] font-black text-slate-600 uppercase tracking-widest">By {p.createdBy || 'Unknown'}</span>
                   </div>
                   <button 
                     onClick={() => onLoad(p)}

@@ -57,24 +57,30 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedUsers = localStorage.getItem('sunwise_users');
-    if (savedUsers) {
-      setUsers(JSON.parse(savedUsers));
-    } else {
+    try {
+      const savedUsers = localStorage.getItem('sunwise_users');
+      if (savedUsers) {
+        setUsers(JSON.parse(savedUsers));
+      } else {
+        setUsers([INITIAL_ADMIN]);
+        localStorage.setItem('sunwise_users', JSON.stringify([INITIAL_ADMIN]));
+      }
+
+      const proposalsData = localStorage.getItem('sunwise_proposals');
+      if (proposalsData) {
+        setSavedProposals(JSON.parse(proposalsData));
+      }
+
+      const savedAuth = localStorage.getItem('sunwise_auth');
+      if (savedAuth) {
+        const user = JSON.parse(savedAuth);
+        setCurrentUser(user);
+        setIsLoggedIn(true);
+      }
+    } catch (e) {
+      console.error("Storage parse error, resetting state:", e);
       setUsers([INITIAL_ADMIN]);
-      localStorage.setItem('sunwise_users', JSON.stringify([INITIAL_ADMIN]));
-    }
-
-    const proposalsData = localStorage.getItem('sunwise_proposals');
-    if (proposalsData) {
-      setSavedProposals(JSON.parse(proposalsData));
-    }
-
-    const savedAuth = localStorage.getItem('sunwise_auth');
-    if (savedAuth) {
-      const user = JSON.parse(savedAuth);
-      setCurrentUser(user);
-      setIsLoggedIn(true);
+      localStorage.clear();
     }
   }, []);
 
