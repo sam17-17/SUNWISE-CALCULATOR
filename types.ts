@@ -5,8 +5,8 @@ export interface User {
   id: string;
   name: string;
   role: UserRole;
-  username: string; // Changed from email
-  pin?: string;     // Changed from password (numerical/text pin)
+  username: string; 
+  pin?: string;     
   avatar?: string;
 }
 
@@ -56,6 +56,14 @@ export interface SolarResult {
   carbonOffsetTons: number;
   components: Component[];
   panelCount: number;
+}
+
+export interface SavedProposal {
+  id: string;
+  timestamp: string;
+  input: UserInput;
+  results: SolarResult;
+  createdBy: string;
 }
 
 export interface AIAdvice {

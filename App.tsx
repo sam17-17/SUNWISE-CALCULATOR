@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { UserInput, SolarResult, AIAdvice, User, UserRole } from './types';
+import { UserInput, SolarResult, AIAdvice, User, UserRole, SavedProposal } from './types';
 import { calculateSolarPotential, getEstimatedSunlight } from './utils/calculations';
 import { getSolarAdvice } from './services/geminiService';
 import InputSection from './components/InputSection';
@@ -8,6 +8,7 @@ import ResultsSection from './components/ResultsSection';
 import AIAdviceSection from './components/AIAdviceSection';
 import MaintenanceMonitor from './components/MaintenanceMonitor';
 import UserManagement from './components/UserManagement';
+import ArchiveSection from './components/ArchiveSection';
 import Login from './components/Login';
 
 const INITIAL_ADMIN: User = { 
@@ -22,7 +23,8 @@ const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
-  const [activeTab, setActiveTab] = useState<'calculator' | 'management'>('calculator');
+  const [savedProposals, setSavedProposals] = useState<SavedProposal[]>([]);
+  const [activeTab, setActiveTab] = useState<'calculator' | 'management' | 'archive'>('calculator');
   
   const [input, setInput] = useState<UserInput>({
     clientName: '',
@@ -61,6 +63,11 @@ const App: React.FC = () => {
     } else {
       setUsers([INITIAL_ADMIN]);
       localStorage.setItem('sunwise_users', JSON.stringify([INITIAL_ADMIN]));
+    }
+
+    const proposalsData = localStorage.getItem('sunwise_proposals');
+    if (proposalsData) {
+      setSavedProposals(JSON.parse(proposalsData));
     }
 
     const savedAuth = localStorage.getItem('sunwise_auth');
@@ -106,6 +113,33 @@ const App: React.FC = () => {
     const updatedUsers = users.filter(u => u.id !== userId);
     setUsers(updatedUsers);
     localStorage.setItem('sunwise_users', JSON.stringify(updatedUsers));
+  };
+
+  const handleSaveProposal = (proposalResults: SolarResult) => {
+    if (!currentUser) return;
+    const newProposal: SavedProposal = {
+      id: `GS-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
+      timestamp: new Date().toISOString(),
+      input: { ...input },
+      results: { ...proposalResults },
+      createdBy: currentUser.username
+    };
+    const updated = [newProposal, ...savedProposals];
+    setSavedProposals(updated);
+    localStorage.setItem('sunwise_proposals', JSON.stringify(updated));
+  };
+
+  const handleLoadProposal = (proposal: SavedProposal) => {
+    setInput(proposal.input);
+    setResults(proposal.results);
+    setAdvice(null);
+    setActiveTab('calculator');
+  };
+
+  const handleDeleteProposal = (proposalId: string) => {
+    const updated = savedProposals.filter(p => p.id !== proposalId);
+    setSavedProposals(updated);
+    localStorage.setItem('sunwise_proposals', JSON.stringify(updated));
   };
 
   const handleCalculate = async () => {
@@ -207,6 +241,12 @@ const App: React.FC = () => {
               >
                 Calculator
               </button>
+              <button 
+                onClick={() => setActiveTab('archive')}
+                className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'archive' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+              >
+                Archive
+              </button>
               {isManagementAllowed && (
                 <button 
                   onClick={() => setActiveTab('management')}
@@ -253,6 +293,12 @@ const App: React.FC = () => {
             setInput={setInput}
             onAddUser={handleAddUser}
             onDeleteUser={handleDeleteUser}
+          />
+        ) : activeTab === 'archive' ? (
+          <ArchiveSection 
+            proposals={savedProposals} 
+            onLoad={handleLoadProposal} 
+            onDelete={handleDeleteProposal} 
           />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -301,6 +347,7 @@ const App: React.FC = () => {
                       results={results} 
                       clientInfo={{ name: input.clientName, contact: input.clientContact, address: input.clientAddress }} 
                       currentUser={currentUser}
+                      onSave={handleSaveProposal}
                     />
                     
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 no-print">

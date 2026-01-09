@@ -8,7 +8,7 @@ import {
   YAxis, 
   CartesianGrid, 
   Tooltip as RechartsTooltip, 
-  ResponsiveContainer,
+  ResponsiveContainer, 
   ReferenceLine
 } from 'recharts';
 
@@ -20,10 +20,12 @@ interface ResultsSectionProps {
     address: string;
   };
   currentUser: User;
+  onSave?: (results: SolarResult) => void;
 }
 
-const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo, currentUser }) => {
+const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo, currentUser, onSave }) => {
   const [componentImages, setComponentImages] = useState<Record<number, string>>({});
+  const [isSaved, setIsSaved] = useState(false);
   const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   const isAdmin = ['CEO', 'COO', 'Admin', 'Accountant'].includes(currentUser.role);
@@ -62,6 +64,14 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo, cu
 
   const triggerUpload = (index: number) => {
     fileInputRefs.current[index]?.click();
+  };
+
+  const handleSaveToArchive = () => {
+    if (onSave) {
+      onSave(results);
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 2000);
+    }
   };
 
   const CustomTooltip = ({ active, payload }: any) => {
@@ -117,22 +127,35 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo, cu
           </div>
           
           <div className="flex flex-col items-end justify-between border-l border-white/5 pl-12 text-right min-w-[200px] no-print">
-            <div className="space-y-1">
-              <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Reference ID</p>
-              <p className="text-sm font-mono font-black text-cyan-500">GS-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Reference ID</p>
+                <p className="text-sm font-mono font-black text-cyan-500">GS-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
+              </div>
+              <button 
+                onClick={handleSaveToArchive}
+                className={`w-full px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-lg border ${
+                  isSaved 
+                    ? 'bg-green-600 text-white border-green-500' 
+                    : 'bg-indigo-600 text-white border-indigo-500 hover:bg-indigo-500'
+                }`}
+              >
+                <i className={`fas ${isSaved ? 'fa-check' : 'fa-box-archive'} mr-2`}></i> 
+                {isSaved ? 'Archived' : 'Archive'}
+              </button>
+              <button 
+                onClick={() => window.print()}
+                className="w-full px-6 py-3 bg-white text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-cyan-50 transition-all active:scale-95 shadow-lg"
+              >
+                <i className="fas fa-file-pdf mr-2"></i> Print PDF
+              </button>
             </div>
-            <button 
-              onClick={() => window.print()}
-              className="px-6 py-3 bg-white text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-cyan-50 transition-all active:scale-95 shadow-lg"
-            >
-              <i className="fas fa-file-pdf mr-2"></i> Save Proposal
-            </button>
           </div>
         </div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/5 blur-[120px] rounded-full -mr-48 -mt-48 pointer-events-none group-hover:bg-cyan-500/10 transition-all duration-1000"></div>
       </div>
 
-      {/* 2. HERO METRICS */}
+      {/* Hero metrics and other sections remain the same */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <SummaryCard 
           label="System Power" 
@@ -170,7 +193,6 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo, cu
         />
       </div>
 
-      {/* 3. ROI CHART */}
       <div className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden backdrop-blur-sm group">
         <div className="flex justify-between items-start mb-12">
           <div>
@@ -203,7 +225,6 @@ const ResultsSection: React.FC<ResultsSectionProps> = ({ results, clientInfo, cu
         </div>
       </div>
 
-      {/* 4. BILL OF MATERIALS (BOM) */}
       <div className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-md">
         <div className="p-10 border-b border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 bg-white/[0.01]">
           <div>
