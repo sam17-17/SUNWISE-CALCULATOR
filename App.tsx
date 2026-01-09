@@ -25,6 +25,9 @@ const App: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [savedProposals, setSavedProposals] = useState<SavedProposal[]>([]);
   const [activeTab, setActiveTab] = useState<'calculator' | 'management' | 'archive'>('calculator');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('sunwise_theme') as 'light' | 'dark') || 'dark';
+  });
   
   const [input, setInput] = useState<UserInput>({
     clientName: '',
@@ -55,6 +58,16 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [adviceLoading, setAdviceLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Synchronize theme with HTML class
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('sunwise_theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     try {
@@ -94,6 +107,8 @@ const App: React.FC = () => {
       });
     }
   }, []);
+
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   const handleLogin = (user: User) => {
     setCurrentUser(user);
@@ -213,26 +228,26 @@ const App: React.FC = () => {
   const isManagementAllowed = ['CEO', 'COO', 'Accountant', 'Admin'].includes(currentUser.role);
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-100 selection:bg-cyan-500 selection:text-white transition-colors duration-500">
+    <div className={`min-h-screen transition-colors duration-500 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 selection:bg-cyan-500 selection:text-white`}>
       <div className="fixed inset-0 overflow-hidden pointer-events-none no-print">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/5 blur-[120px] rounded-full"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-indigo-500/5 blur-[120px] rounded-full"></div>
       </div>
 
-      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/5 no-print">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 no-print">
         <div className="max-w-[1400px] mx-auto px-6 h-18 flex items-center justify-between py-4">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-4">
               <div className="relative group cursor-pointer" onClick={() => setActiveTab('calculator')}>
                 <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-25 group-hover:opacity-60 transition duration-500"></div>
-                <div className="relative w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center border border-white/10">
-                  <i className="fas fa-solar-panel text-cyan-400 text-lg"></i>
+                <div className="relative w-10 h-10 bg-slate-100 dark:bg-slate-900 rounded-xl flex items-center justify-center border border-slate-200 dark:border-white/10">
+                  <i className="fas fa-solar-panel text-cyan-600 dark:text-cyan-400 text-lg"></i>
                 </div>
               </div>
               <div>
-                <h1 className="text-xl font-black tracking-tighter text-white uppercase flex items-center gap-2">
+                <h1 className="text-xl font-black tracking-tighter text-slate-900 dark:text-white uppercase flex items-center gap-2">
                   SunWise Pro
-                  <span className="text-cyan-500 text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20 lowercase tracking-normal font-mono">
+                  <span className="text-cyan-600 dark:text-cyan-500 text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded-full border border-cyan-500/20 lowercase tracking-normal font-mono">
                     Geosam Portal
                   </span>
                 </h1>
@@ -240,23 +255,23 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <nav className="hidden md:flex items-center bg-slate-900/50 p-1 rounded-xl border border-white/5">
+            <nav className="hidden md:flex items-center bg-slate-100 dark:bg-slate-900/50 p-1 rounded-xl border border-slate-200 dark:border-white/5">
               <button 
                 onClick={() => setActiveTab('calculator')}
-                className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'calculator' ? 'bg-cyan-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'calculator' ? 'bg-cyan-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
               >
                 Calculator
               </button>
               <button 
                 onClick={() => setActiveTab('archive')}
-                className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'archive' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'archive' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
               >
                 Archive
               </button>
               {isManagementAllowed && (
                 <button 
                   onClick={() => setActiveTab('management')}
-                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'management' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'management' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                 >
                   Management
                 </button>
@@ -264,15 +279,24 @@ const App: React.FC = () => {
             </nav>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3 pr-6 border-r border-white/10">
-              <div className="text-right">
-                <p className="text-[10px] font-black text-white leading-none uppercase tracking-tighter">{currentUser.name}</p>
-                <p className="text-[8px] font-black text-cyan-500 uppercase tracking-widest mt-1">{currentUser.role}</p>
+          <div className="flex items-center gap-4">
+            {/* Theme Toggle Button */}
+            <button 
+              onClick={toggleTheme}
+              className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 transition-all active:scale-95 shadow-sm"
+              title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+            >
+              <i className={`fas ${theme === 'dark' ? 'fa-sun' : 'fa-moon'} text-sm`}></i>
+            </button>
+
+            <div className="flex items-center gap-3 pr-4 border-r border-slate-200 dark:border-white/10">
+              <div className="text-right hidden sm:block">
+                <p className="text-[10px] font-black text-slate-900 dark:text-white leading-none uppercase tracking-tighter">{currentUser.name}</p>
+                <p className="text-[8px] font-black text-cyan-600 dark:text-cyan-500 uppercase tracking-widest mt-1">{currentUser.role}</p>
               </div>
               <button 
                 onClick={handleLogout}
-                className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center border border-white/10 text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-95"
+                className="w-10 h-10 bg-slate-100 dark:bg-white/5 rounded-xl flex items-center justify-center border border-slate-200 dark:border-white/10 text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-all active:scale-95"
                 title="Logout"
               >
                 <i className="fas fa-right-from-bracket"></i>
@@ -281,9 +305,9 @@ const App: React.FC = () => {
             
             <button 
               onClick={() => window.print()}
-              className="hidden lg:block text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white px-4 py-2 bg-white/5 rounded-lg border border-white/5 transition-all"
+              className="hidden lg:block text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white px-4 py-2 bg-slate-100 dark:bg-white/5 rounded-lg border border-slate-200 dark:border-white/5 transition-all shadow-sm"
             >
-              <i className="fas fa-file-pdf mr-2"></i> Export
+              <i className="fas fa-file-pdf mr-2 text-cyan-600"></i> Export
             </button>
           </div>
         </div>
@@ -323,26 +347,26 @@ const App: React.FC = () => {
 
             <section className="lg:col-span-8 xl:col-span-9 space-y-8">
               {!results && !loading ? (
-                <div className="h-[650px] flex flex-col items-center justify-center border-2 border-dashed border-white/5 rounded-[2.5rem] bg-white/[0.01] animate-in fade-in zoom-in duration-700">
-                  <div className="w-24 h-24 bg-slate-900 rounded-[2rem] flex items-center justify-center mb-8 border border-white/10 shadow-2xl relative">
-                    <div className="absolute inset-0 bg-cyan-500/20 blur-2xl rounded-full animate-pulse"></div>
-                    <i className="fas fa-microchip text-4xl text-slate-700 relative z-10"></i>
+                <div className="h-[650px] flex flex-col items-center justify-center border-2 border-dashed border-slate-200 dark:border-white/5 rounded-[2.5rem] bg-white/[0.01] animate-in fade-in zoom-in duration-700">
+                  <div className="w-24 h-24 bg-slate-100 dark:bg-slate-900 rounded-[2rem] flex items-center justify-center mb-8 border border-slate-200 dark:border-white/10 shadow-2xl relative">
+                    <div className="absolute inset-0 bg-cyan-500/10 dark:bg-cyan-500/20 blur-2xl rounded-full animate-pulse"></div>
+                    <i className="fas fa-microchip text-4xl text-slate-300 dark:text-slate-700 relative z-10"></i>
                   </div>
-                  <h2 className="text-3xl font-black text-white mb-3 uppercase tracking-tighter text-center">Ready for Configuration</h2>
+                  <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-3 uppercase tracking-tighter text-center">Ready for Configuration</h2>
                   <p className="text-slate-500 max-w-md text-center text-sm leading-relaxed px-8">
-                    Welcome <span className="text-cyan-400 font-black">{currentUser.name}</span>. Use the calculator to architect high-efficiency solar solutions for Geosam clients.
+                    Welcome <span className="text-cyan-600 dark:text-cyan-400 font-black">{currentUser.name}</span>. Use the calculator to architect high-efficiency solar solutions for Geosam clients.
                   </p>
                 </div>
               ) : loading ? (
                 <div className="h-[650px] flex flex-col items-center justify-center gap-8 animate-pulse">
                   <div className="relative">
-                    <div className="w-32 h-32 border-4 border-white/5 border-t-cyan-500 rounded-full animate-spin"></div>
+                    <div className="w-32 h-32 border-4 border-slate-200 dark:border-white/5 border-t-cyan-500 rounded-full animate-spin"></div>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <i className="fas fa-sun text-cyan-500/50 text-4xl animate-bounce"></i>
                     </div>
                   </div>
                   <div className="text-center space-y-2">
-                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter">Crunching the Numbers</h3>
+                    <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Crunching the Numbers</h3>
                     <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Architecting high-efficiency solar infrastructure</p>
                   </div>
                 </div>
@@ -359,8 +383,8 @@ const App: React.FC = () => {
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 no-print">
                       <div className="space-y-6">
                         {adviceLoading ? (
-                          <div className="p-16 bg-slate-900/40 rounded-[2rem] border border-white/10 flex flex-col items-center justify-center gap-6 animate-pulse">
-                            <div className="w-10 h-10 border-2 border-white/10 border-t-cyan-500 rounded-full animate-spin"></div>
+                          <div className="p-16 bg-white dark:bg-slate-900/40 rounded-[2rem] border border-slate-200 dark:border-white/10 flex flex-col items-center justify-center gap-6 animate-pulse shadow-sm">
+                            <div className="w-10 h-10 border-2 border-slate-200 dark:border-white/10 border-t-cyan-500 rounded-full animate-spin"></div>
                             <p className="text-slate-500 text-[10px] uppercase font-black tracking-[0.2em]">Auditing AI Context</p>
                           </div>
                         ) : (
@@ -387,15 +411,15 @@ const App: React.FC = () => {
         )}
       </main>
 
-      <footer className="mt-20 py-16 border-t border-white/5 bg-slate-950/80 backdrop-blur-md no-print">
+      <footer className="mt-20 py-16 border-t border-slate-200 dark:border-white/5 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md no-print">
         <div className="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
-            <h4 className="text-lg font-black text-white tracking-widest uppercase mb-1">Geosam Investments</h4>
+            <h4 className="text-lg font-black text-slate-900 dark:text-white tracking-widest uppercase mb-1">Geosam Investments</h4>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest opacity-60 italic">Engineering Sustainable Futures Since 2012</p>
           </div>
-          <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black text-slate-600 uppercase tracking-[0.2em]">
-            <span className="bg-slate-900 px-3 py-1 rounded-full text-cyan-500 border border-white/5">Session Active: {currentUser.username}</span>
-            <span className="hover:text-cyan-500 cursor-pointer transition-colors px-2 py-1">Help Desk</span>
+          <div className="flex flex-wrap justify-center gap-8 text-[10px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-[0.2em]">
+            <span className="bg-slate-100 dark:bg-slate-900 px-3 py-1 rounded-full text-cyan-600 dark:text-cyan-500 border border-slate-200 dark:border-white/5">Session Active: {currentUser.username}</span>
+            <span className="hover:text-cyan-600 dark:hover:text-cyan-500 cursor-pointer transition-colors px-2 py-1">Help Desk</span>
           </div>
         </div>
       </footer>
