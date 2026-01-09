@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { UserInput, SolarResult, AIAdvice } from './types';
-import { calculateSolarPotential, getEstimatedSunlight } from './utils/calculations';
-import { getSolarAdvice } from './services/geminiService';
-import InputSection from './components/InputSection';
-import ResultsSection from './components/ResultsSection';
-import AIAdviceSection from './components/AIAdviceSection';
-import MaintenanceMonitor from './components/MaintenanceMonitor';
+import { UserInput, SolarResult, AIAdvice } from './types.ts';
+import { calculateSolarPotential, getEstimatedSunlight } from './utils/calculations.ts';
+import { getSolarAdvice } from './services/geminiService.ts';
+import InputSection from './components/InputSection.tsx';
+import ResultsSection from './components/ResultsSection.tsx';
+import AIAdviceSection from './components/AIAdviceSection.tsx';
+import MaintenanceMonitor from './components/MaintenanceMonitor.tsx';
 
 const App: React.FC = () => {
   const [input, setInput] = useState<UserInput>({

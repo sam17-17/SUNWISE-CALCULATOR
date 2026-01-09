@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState } from 'react';
-import { UserInput } from '../types';
+import { UserInput } from '../types.ts';
 
 interface InputSectionProps {
   input: UserInput;

@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { MaintenanceTask, SolarResult } from '../types';
+import { MaintenanceTask, SolarResult } from '../types.ts';
 
 interface MaintenanceMonitorProps {
   results: SolarResult;
