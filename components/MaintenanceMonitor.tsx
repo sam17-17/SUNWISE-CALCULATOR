@@ -69,44 +69,44 @@ const MaintenanceMonitor: React.FC<MaintenanceMonitorProps> = ({ results }) => {
     .sort()[0] || 'Set reminders below';
 
   return (
-    <div className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-md shadow-2xl h-full flex flex-col">
-      <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
+    <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 rounded-[2.5rem] overflow-hidden backdrop-blur-md shadow-xl h-full flex flex-col">
+      <div className="p-8 border-b border-slate-100 dark:border-white/5 flex justify-between items-center bg-slate-50/50 dark:bg-white/[0.01]">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
-            <i className="fas fa-heart-pulse text-cyan-400"></i>
+            <i className="fas fa-heart-pulse text-cyan-600 dark:text-cyan-400"></i>
           </div>
           <div>
-            <h3 className="font-black text-xl text-white uppercase tracking-tighter">Maintenance Hub</h3>
+            <h3 className="font-black text-xl text-slate-900 dark:text-white uppercase tracking-tighter">Maintenance Hub</h3>
             <p className="text-[10px] text-slate-500 uppercase tracking-[0.2em] font-black">Lifecycle Reliability Care</p>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-3xl font-black text-cyan-400 leading-none">{Math.round(healthScore)}%</div>
+          <div className="text-3xl font-black text-cyan-600 dark:text-cyan-400 leading-none">{Math.round(healthScore)}%</div>
           <div className="text-[9px] text-slate-500 uppercase font-black tracking-widest mt-1">System Health</div>
         </div>
       </div>
 
       <div className="p-8 flex-1">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <div className="bg-slate-950/50 p-5 rounded-2xl border border-white/5 shadow-inner">
-            <p className="text-[9px] uppercase font-black text-slate-500 mb-2 tracking-widest">Next Critical Date</p>
+          <div className="bg-slate-50 dark:bg-slate-950/50 p-5 rounded-2xl border border-slate-100 dark:border-white/5 shadow-inner">
+            <p className="text-[9px] uppercase font-black text-slate-400 dark:text-slate-500 mb-2 tracking-widest">Next Critical Date</p>
             <div className="flex items-center gap-3">
-              <i className="fas fa-calendar-check text-cyan-500/50"></i>
-              <span className="text-sm font-bold text-white">
+              <i className="fas fa-calendar-check text-cyan-600 dark:text-cyan-500/50"></i>
+              <span className="text-sm font-bold text-slate-700 dark:text-white">
                 {nextServiceDate === 'Set reminders below' ? nextServiceDate : new Date(nextServiceDate).toLocaleDateString('en-KE', { day: 'numeric', month: 'short', year: 'numeric' })}
               </span>
             </div>
           </div>
-          <div className="bg-slate-950/50 p-5 rounded-2xl border border-white/5 shadow-inner">
-            <p className="text-[9px] uppercase font-black text-slate-500 mb-2 tracking-widest">Predicted Longevity</p>
+          <div className="bg-slate-50 dark:bg-slate-950/50 p-5 rounded-2xl border border-slate-100 dark:border-white/5 shadow-inner">
+            <p className="text-[9px] uppercase font-black text-slate-400 dark:text-slate-500 mb-2 tracking-widest">Predicted Longevity</p>
             <div className="flex items-center gap-3">
-              <i className="fas fa-hourglass-start text-cyan-500/50"></i>
-              <span className="text-sm font-bold text-white">24.2 Years Remaining</span>
+              <i className="fas fa-hourglass-start text-cyan-600 dark:text-cyan-500/50"></i>
+              <span className="text-sm font-bold text-slate-700 dark:text-white">24.2 Years Remaining</span>
             </div>
           </div>
         </div>
 
-        <h4 className="text-[10px] uppercase font-black text-slate-500 mb-5 tracking-[0.2em]">Asset Care Schedule</h4>
+        <h4 className="text-[10px] uppercase font-black text-slate-400 dark:text-slate-500 mb-5 tracking-[0.2em]">Asset Care Schedule</h4>
         <div className="space-y-4">
           {tasks.map((task) => (
             <div 
@@ -114,14 +114,14 @@ const MaintenanceMonitor: React.FC<MaintenanceMonitorProps> = ({ results }) => {
               className={`group p-5 rounded-[1.5rem] border transition-all relative overflow-hidden ${
                 completedIds.has(task.id) 
                   ? 'bg-green-500/[0.02] border-green-500/20 opacity-60' 
-                  : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                  : 'bg-slate-50/50 dark:bg-white/[0.02] border-slate-200 dark:border-white/10 hover:border-cyan-500/30'
               }`}
             >
               <div className="flex gap-5 relative z-10">
                 <div 
                   onClick={() => toggleTask(task.id)}
                   className={`w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center cursor-pointer transition-all shadow-lg ${
-                    completedIds.has(task.id) ? 'bg-green-500/20 text-green-400' : 'bg-slate-950 text-slate-500 border border-white/5'
+                    completedIds.has(task.id) ? 'bg-green-500/20 text-green-600 dark:text-green-400' : 'bg-white dark:bg-slate-950 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-white/5'
                   }`}
                 >
                   <i className={`fas ${task.icon} text-lg`}></i>
@@ -129,41 +129,41 @@ const MaintenanceMonitor: React.FC<MaintenanceMonitorProps> = ({ results }) => {
                 <div className="flex-1">
                   <div className="flex justify-between items-start">
                     <div onClick={() => toggleTask(task.id)} className="cursor-pointer">
-                      <h5 className={`font-black text-base tracking-tight uppercase ${completedIds.has(task.id) ? 'text-green-400 line-through' : 'text-white'}`}>
+                      <h5 className={`font-black text-base tracking-tight uppercase ${completedIds.has(task.id) ? 'text-green-600 dark:text-green-400 line-through' : 'text-slate-900 dark:text-white'}`}>
                         {task.title}
                       </h5>
                       <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest mt-1 inline-block ${
-                        task.impact === 'High' ? 'bg-red-500/20 text-red-400' : 
-                        task.impact === 'Medium' ? 'bg-amber-500/20 text-amber-400' : 
-                        'bg-slate-700 text-slate-400'
+                        task.impact === 'High' ? 'bg-red-500/10 text-red-600 dark:bg-red-500/20 dark:text-red-400' : 
+                        task.impact === 'Medium' ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400' : 
+                        'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
                       }`}>
                         {task.impact} Priority
                       </span>
                     </div>
                     
                     <div className="flex flex-col items-end">
-                       <label className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Reminder Date</label>
+                       <label className="text-[8px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-1">Reminder Date</label>
                        <input 
                          type="date" 
                          value={task.reminderDate || ''}
                          onChange={(e) => updateReminderDate(task.id, e.target.value)}
-                         className="bg-slate-950 border border-white/10 rounded-lg px-2 py-1 text-[10px] text-slate-400 font-bold outline-none focus:border-cyan-500/50 transition-all cursor-pointer invert-calendar-icon"
+                         className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/10 rounded-lg px-2 py-1 text-[10px] text-slate-600 dark:text-slate-400 font-bold outline-none focus:border-cyan-500/50 transition-all cursor-pointer invert-calendar-icon"
                        />
                     </div>
                   </div>
                   
                   <p className="text-[11px] text-slate-500 mt-2 leading-relaxed font-medium">{task.description}</p>
                   
-                  <div className="flex items-center gap-4 mt-4 border-t border-white/5 pt-3">
+                  <div className="flex items-center gap-4 mt-4 border-t border-slate-100 dark:border-white/5 pt-3">
                     <span className="text-[9px] font-black text-slate-400 flex items-center gap-1.5 uppercase tracking-widest">
                       <i className="fas fa-repeat opacity-50"></i> {task.interval}
                     </span>
                     {completedIds.has(task.id) ? (
-                      <span className="text-[9px] font-black text-green-500 flex items-center gap-1.5 uppercase tracking-widest">
+                      <span className="text-[9px] font-black text-green-600 dark:text-green-500 flex items-center gap-1.5 uppercase tracking-widest">
                         <i className="fas fa-check-circle"></i> Completed
                       </span>
                     ) : task.reminderDate && (
-                      <span className="text-[9px] font-black text-cyan-500 flex items-center gap-1.5 uppercase tracking-widest animate-pulse">
+                      <span className="text-[9px] font-black text-cyan-600 dark:text-cyan-500 flex items-center gap-1.5 uppercase tracking-widest animate-pulse">
                         <i className="fas fa-clock"></i> Scheduled
                       </span>
                     )}
@@ -176,9 +176,9 @@ const MaintenanceMonitor: React.FC<MaintenanceMonitorProps> = ({ results }) => {
 
         <div className="mt-10 p-5 bg-cyan-500/5 border border-cyan-500/10 rounded-2xl flex items-start gap-4">
           <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center flex-shrink-0 border border-cyan-500/20">
-            <i className="fas fa-info-circle text-cyan-400 text-xs"></i>
+            <i className="fas fa-info-circle text-cyan-600 dark:text-cyan-400 text-xs"></i>
           </div>
-          <p className="text-[11px] text-cyan-100/40 leading-relaxed italic font-medium">
+          <p className="text-[11px] text-slate-500 dark:text-cyan-100/40 leading-relaxed italic font-medium">
             Strategic advice: Setting custom reminders for dust removal during the dry season (Jan-March) can maximize your energy harvest by over 18% in the Kenyan region.
           </p>
         </div>

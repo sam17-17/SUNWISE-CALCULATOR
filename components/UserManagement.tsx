@@ -35,49 +35,49 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser, users, sys
     <div className="space-y-8 animate-in fade-in duration-500">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h2 className="text-3xl font-black text-white uppercase tracking-tighter">Enterprise Intelligence</h2>
+          <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Enterprise Intelligence</h2>
           <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest mt-1">
-            Logged in: <span className="text-cyan-500">{currentUser.name}</span> • Level: {currentUser.role}
+            Logged in: <span className="text-cyan-600 dark:text-cyan-50">{currentUser.name}</span> • Level: {currentUser.role}
           </p>
         </div>
         <div className="flex gap-4">
-           <div className="bg-slate-900 border border-white/5 p-4 rounded-2xl">
-              <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Personnel</p>
-              <p className="text-xl font-black text-white">{users.length}</p>
+           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 p-4 rounded-2xl shadow-sm">
+              <p className="text-[8px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-1">Personnel</p>
+              <p className="text-xl font-black text-slate-900 dark:text-white">{users.length}</p>
            </div>
-           <div className="bg-slate-900 border border-white/5 p-4 rounded-2xl">
-              <p className="text-[8px] font-black text-slate-600 uppercase tracking-widest mb-1">Lead Count</p>
-              <p className="text-xl font-black text-cyan-500">12</p>
+           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 p-4 rounded-2xl shadow-sm">
+              <p className="text-[8px] font-black text-slate-400 dark:text-slate-600 uppercase tracking-widest mb-1">Lead Count</p>
+              <p className="text-xl font-black text-cyan-600 dark:text-cyan-500">12</p>
            </div>
         </div>
       </header>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
         <div className="xl:col-span-2 space-y-8">
-           <div className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-md relative overflow-hidden">
+           <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 backdrop-blur-md relative overflow-hidden shadow-xl">
               <div className="relative z-10">
-                <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-8">Financial Overview</h3>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-8">Financial Overview</h3>
                 {!systemResults ? (
-                  <div className="py-12 text-center border-2 border-dashed border-white/5 rounded-3xl">
-                    <p className="text-slate-600 font-bold uppercase text-[10px] tracking-widest">Active results required for BI analysis</p>
+                  <div className="py-12 text-center border-2 border-dashed border-slate-200 dark:border-white/5 rounded-3xl">
+                    <p className="text-slate-400 dark:text-slate-600 font-bold uppercase text-[10px] tracking-widest">Active results required for BI analysis</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                      <MetricBox label="Cost Basis" value={`KES ${systemResults.estimatedTotalCost.toLocaleString()}`} icon="fa-coins" />
                      <MetricBox label="Revenue" value={`KES ${systemResults.estimatedRetailPrice.toLocaleString()}`} icon="fa-hand-holding-dollar" />
-                     <MetricBox label="Margin" value={`KES ${systemResults.projectedProfit.toLocaleString()}`} icon="fa-chart-pie" color="text-emerald-400" />
+                     <MetricBox label="Margin" value={`KES ${systemResults.projectedProfit.toLocaleString()}`} icon="fa-chart-pie" color="text-emerald-600 dark:text-emerald-400" />
                   </div>
                 )}
               </div>
            </div>
 
-           <div className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-md">
+           <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 backdrop-blur-md shadow-xl">
               <div className="flex justify-between items-center mb-8">
-                <h3 className="text-xl font-black text-white uppercase tracking-tighter">Internal Directory</h3>
+                <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Internal Directory</h3>
                 {isSuperAdmin && (
                   <button 
                     onClick={() => setShowAddForm(!showAddForm)}
-                    className="px-4 py-2 bg-white text-slate-950 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-cyan-50 transition-all active:scale-95 flex items-center gap-2 shadow-lg"
+                    className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-950 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-cyan-600 dark:hover:bg-cyan-50 transition-all active:scale-95 flex items-center gap-2 shadow-lg"
                   >
                     <i className={`fas ${showAddForm ? 'fa-minus' : 'fa-plus'}`}></i>
                     {showAddForm ? 'Cancel' : 'Register User'}
@@ -86,17 +86,17 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser, users, sys
               </div>
 
               {showAddForm && (
-                <form onSubmit={handleAddSubmit} className="mb-10 p-8 bg-slate-950/50 border border-cyan-500/20 rounded-3xl space-y-6 animate-in slide-in-from-top-4 duration-300">
+                <form onSubmit={handleAddSubmit} className="mb-10 p-8 bg-slate-50 dark:bg-slate-950/50 border border-cyan-500/20 rounded-3xl space-y-6 animate-in slide-in-from-top-4 duration-300">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormInput label="Staff Name" value={newUser.name} onChange={(v) => setNewUser({...newUser, name: v})} placeholder="e.g. John Doe" />
-                    <FormInput label="Unique Username" value={newUser.username} onChange={(v) => setNewUser({...newUser, username: v})} placeholder="jdoe" />
-                    <FormInput label="Access PIN" value={newUser.pin} onChange={(v) => setNewUser({...newUser, pin: v})} placeholder="1234" type="password" />
+                    <FormInput label="Staff Name" value={newUser.name} onChange={(v: string) => setNewUser({...newUser, name: v})} placeholder="e.g. John Doe" />
+                    <FormInput label="Unique Username" value={newUser.username} onChange={(v: string) => setNewUser({...newUser, username: v})} placeholder="jdoe" />
+                    <FormInput label="Access PIN" value={newUser.pin} onChange={(v: string) => setNewUser({...newUser, pin: v})} placeholder="1234" type="password" />
                     <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Project Role</label>
+                      <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Project Role</label>
                       <select 
                         value={newUser.role}
                         onChange={(e) => setNewUser({...newUser, role: e.target.value as UserRole})}
-                        className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-xs font-black text-white focus:border-cyan-500 outline-none appearance-none"
+                        className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-xl px-4 py-3 text-xs font-black text-slate-900 dark:text-white focus:border-cyan-500 outline-none appearance-none"
                       >
                         <option value="CEO">CEO</option>
                         <option value="COO">COO</option>
@@ -116,25 +116,25 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser, users, sys
 
               <div className="space-y-4">
                  {users.map(u => (
-                   <div key={u.id} className="flex items-center justify-between p-5 bg-slate-950/50 rounded-2xl border border-white/5 group hover:border-white/20 transition-all shadow-lg">
+                   <div key={u.id} className="flex items-center justify-between p-5 bg-slate-50/50 dark:bg-slate-950/50 rounded-2xl border border-slate-200 dark:border-white/5 group hover:border-slate-300 dark:hover:border-white/20 transition-all shadow-sm">
                       <div className="flex items-center gap-5">
-                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl border border-white/5 shadow-inner ${
-                           u.role === 'Admin' ? 'bg-amber-500/10 text-amber-500' : 'bg-slate-800 text-slate-500'
+                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-xl border border-slate-200 dark:border-white/5 shadow-inner ${
+                           u.role === 'Admin' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-500' : 'bg-white dark:bg-slate-800 text-slate-400 dark:text-slate-500'
                          }`}>
-                            {u.name[0]}
+                            {(u.name?.[0] || 'U').toUpperCase()}
                          </div>
                          <div>
                             <div className="flex items-center gap-3">
-                              <p className="text-base font-black text-white uppercase tracking-tight">{u.name}</p>
+                              <p className="text-base font-black text-slate-900 dark:text-white uppercase tracking-tight">{u.name}</p>
                               <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest border ${
-                                u.role === 'Admin' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 
-                                u.role === 'CEO' || u.role === 'COO' ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' :
-                                'bg-slate-800 text-slate-400 border-white/5'
+                                u.role === 'Admin' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' : 
+                                u.role === 'CEO' || u.role === 'COO' ? 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' :
+                                'bg-white dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-white/5'
                               }`}>
                                 {u.role}
                               </span>
                             </div>
-                            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-tighter mt-1">Username: {u.username}</p>
+                            <p className="text-[10px] text-slate-400 dark:text-slate-600 font-bold uppercase tracking-tighter mt-1">Username: {u.username}</p>
                          </div>
                       </div>
                       <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-all">
@@ -146,7 +146,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser, users, sys
                              <i className="fas fa-trash-alt text-xs"></i>
                            </button>
                          )}
-                         <div className="w-10 h-10 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center text-slate-500">
+                         <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-300 dark:text-slate-500 shadow-sm">
                            <i className="fas fa-fingerprint text-xs"></i>
                          </div>
                       </div>
@@ -157,9 +157,9 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser, users, sys
         </div>
 
         <div className="space-y-8">
-           <div className="bg-slate-900/40 border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-md sticky top-24 shadow-2xl">
-              <h3 className="text-xl font-black text-white uppercase tracking-tighter mb-6 flex items-center gap-3">
-                <i className="fas fa-sliders-h text-cyan-500"></i>
+           <div className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 backdrop-blur-md sticky top-24 shadow-xl">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-6 flex items-center gap-3">
+                <i className="fas fa-sliders-h text-cyan-600 dark:text-cyan-500"></i>
                 Global Parameters
               </h3>
               
@@ -199,34 +199,35 @@ const UserManagement: React.FC<UserManagementProps> = ({ currentUser, users, sys
   );
 };
 
-const MetricBox = ({ label, value, icon, color = "text-white" }: any) => (
-  <div className="bg-slate-950 p-6 rounded-3xl border border-white/5 shadow-inner group hover:border-white/20 transition-all">
-     <div className="flex items-center gap-3 mb-3">
-        <i className={`fas ${icon} text-slate-700 text-[10px] group-hover:text-cyan-500 transition-colors`}></i>
-        <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{label}</p>
-     </div>
-     <p className={`text-xl font-black tracking-tighter ${color}`}>{value}</p>
-  </div>
-);
-
+// FormInput sub-component for user creation fields
 const FormInput = ({ label, value, onChange, placeholder, type = "text" }: any) => (
   <div className="space-y-2">
-    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">{label}</label>
-    <input
+    <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">{label}</label>
+    <input 
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-slate-900 border border-white/5 rounded-xl px-4 py-3 text-xs text-white focus:border-cyan-500 outline-none shadow-inner"
       placeholder={placeholder}
+      className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-xl px-4 py-3 text-xs font-black text-slate-900 dark:text-white focus:border-cyan-500 outline-none placeholder:text-slate-300 dark:placeholder:text-slate-700 shadow-sm"
     />
+  </div>
+);
+
+const MetricBox = ({ label, value, icon, color = "text-slate-900 dark:text-white" }: any) => (
+  <div className="bg-slate-50 dark:bg-slate-950 p-6 rounded-3xl border border-slate-100 dark:border-white/5 shadow-inner group hover:border-cyan-500/20 transition-all">
+     <div className="flex items-center gap-3 mb-3">
+        <i className={`fas ${icon} text-slate-400 dark:text-slate-700 text-[10px] group-hover:text-cyan-600 dark:group-hover:text-cyan-500 transition-colors`}></i>
+        <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{label}</p>
+     </div>
+     <p className={`text-xl font-black tracking-tighter ${color}`}>{value}</p>
   </div>
 );
 
 const ConfigItem = ({ label, value, onChange, disabled, unit = "" }: any) => (
   <div className={`space-y-2 ${disabled ? 'opacity-40 grayscale' : ''}`}>
      <div className="flex justify-between items-center">
-        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{label}</label>
-        {disabled && <i className="fas fa-lock text-[8px] text-slate-800"></i>}
+        <label className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{label}</label>
+        {disabled && <i className="fas fa-lock text-[8px] text-slate-300 dark:text-slate-800"></i>}
      </div>
      <div className="relative">
         <input 
@@ -234,9 +235,9 @@ const ConfigItem = ({ label, value, onChange, disabled, unit = "" }: any) => (
           value={value} 
           onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
           disabled={disabled}
-          className="w-full bg-slate-950 border border-white/5 rounded-xl px-4 py-3 text-xs font-black text-white focus:border-cyan-500 outline-none shadow-inner"
+          className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-white/5 rounded-xl px-4 py-3 text-xs font-black text-slate-900 dark:text-white focus:border-cyan-500 outline-none shadow-inner"
         />
-        {unit && <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-slate-700">{unit}</span>}
+        {unit && <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-black text-slate-300 dark:text-slate-700">{unit}</span>}
      </div>
   </div>
 );

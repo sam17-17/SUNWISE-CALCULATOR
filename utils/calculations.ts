@@ -12,9 +12,9 @@ export const getEstimatedSunlight = (latitude: number): number => {
 
 export const calculateSolarPotential = (input: UserInput): SolarResult => {
   const { 
-    monthlyBill, 
-    electricityRate, 
-    sunlightHours,
+    monthlyBill = 0, 
+    electricityRate = 1, 
+    sunlightHours = 4.5,
     panelWattage = 400,
     batteryCapacity = 5,
     batterySizeDescription = '',
@@ -29,26 +29,31 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
     markupPercentage = 15
   } = input;
   
-  const monthlyKwh = monthlyBill / (electricityRate || 1);
+  const safeRate = electricityRate > 0 ? electricityRate : 1;
+  const safeSun = sunlightHours > 0 ? sunlightHours : 4.5;
+  const safePanelWattage = panelWattage > 0 ? panelWattage : 400;
+  const safeInverterCap = inverterCapacity > 0 ? inverterCapacity : 5;
+  const safeBatteryCap = batteryCapacity > 0 ? batteryCapacity : 5;
+
+  const monthlyKwh = monthlyBill / safeRate;
   const dailyKwh = monthlyKwh / 30;
   const designSafetyFactor = 1.2;
   const dailyEnergyTarget = dailyKwh * designSafetyFactor;
 
   const efficiencyLossFactor = 0.8;
-  const sunHrs = sunlightHours || 4.5;
-  const requiredSystemSizeKw = dailyEnergyTarget / (sunHrs * efficiencyLossFactor);
+  const requiredSystemSizeKw = dailyEnergyTarget / (safeSun * efficiencyLossFactor);
 
-  const panelCount = Math.ceil((requiredSystemSizeKw * 1000) / panelWattage);
-  const actualSystemSizeKw = (panelCount * panelWattage) / 1000;
-  const batteryCount = Math.ceil(dailyEnergyTarget / batteryCapacity);
-  const inverterCount = Math.ceil(actualSystemSizeKw / inverterCapacity);
+  const panelCount = Math.ceil((requiredSystemSizeKw * 1000) / safePanelWattage);
+  const actualSystemSizeKw = (panelCount * safePanelWattage) / 1000;
+  const batteryCount = Math.ceil(dailyEnergyTarget / safeBatteryCap);
+  const inverterCount = Math.ceil(actualSystemSizeKw / safeInverterCap);
 
-  const annualProduction = actualSystemSizeKw * sunHrs * 365 * efficiencyLossFactor;
+  const annualProduction = actualSystemSizeKw * safeSun * 365 * efficiencyLossFactor;
 
   const components: Component[] = [
     {
       name: 'Solar Panels',
-      size: `${panelWattage}W`,
+      size: `${safePanelWattage}W`,
       quantity: panelCount,
       unit: 'Units',
       unitPrice: panelPricePerUnit,
@@ -56,7 +61,7 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
     },
     {
       name: 'Battery Storage',
-      size: batterySizeDescription || `${batteryCapacity}kWh`,
+      size: batterySizeDescription || `${safeBatteryCap}kWh`,
       quantity: batteryCount,
       unit: 'Units',
       unitPrice: batteryPricePerUnit,
@@ -64,7 +69,7 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
     },
     {
       name: 'Hybrid Inverter',
-      size: `${inverterCapacity}kW`,
+      size: `${safeInverterCap}kW`,
       quantity: inverterCount,
       unit: 'Units',
       unitPrice: inverterPrice,
@@ -108,8 +113,9 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
   const retailPrice = estimatedTotalCost * (1 + (markupPercentage / 100));
   const profit = retailPrice - estimatedTotalCost;
 
-  const monthlySavings = monthlyKwh * electricityRate;
-  const paybackYears = monthlySavings > 0 ? retailPrice / (monthlySavings * 12) : 0;
+  const monthlySavingsValue = monthlyKwh * safeRate;
+  const annualSavings = monthlySavingsValue * 12;
+  const paybackYears = annualSavings > 0 ? retailPrice / annualSavings : 0;
   const carbonOffsetTons = (annualProduction * 0.4) / 1000;
 
   return {
@@ -119,7 +125,7 @@ export const calculateSolarPotential = (input: UserInput): SolarResult => {
     estimatedTotalCost: Math.round(estimatedTotalCost),
     estimatedRetailPrice: Math.round(retailPrice),
     projectedProfit: Math.round(profit),
-    monthlySavings: Math.round(monthlySavings),
+    monthlySavings: Math.round(monthlySavingsValue),
     paybackYears: Number(paybackYears.toFixed(1)),
     carbonOffsetTons: Number(carbonOffsetTons.toFixed(2)),
     components,
